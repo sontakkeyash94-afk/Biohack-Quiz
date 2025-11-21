@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Biohack Quiz</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="theme-color" content="#0b63a6"/>
+</head>
+<body>
+  <div id="app" class="app light">
+    <header class="topbar">
+      <div class="brand">Biohack Quiz</div>
+      <div class="right-controls">
+        <button id="themeToggle" class="icon-btn" title="Toggle theme">🌓</button>
+        <button id="settingsBtn" class="icon-btn" title="Settings">⚙️</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- Tabs -->
+      <nav class="tabs">
+        <button class="tab active" data-tab="chapters">Chapters</button>
+        <button class="tab" data-tab="daily">Daily Test</button>
+        <button class="tab" data-tab="perf">Performance</button>
+      </nav>
+
+      <!-- Chapters Tab -->
+      <section id="chapters" class="tabview">
+        <div class="panel">
+          <h2>Import Chapter (paste text)</h2>
+          <div class="muted">Paste numbered sentences (each sentence on new line or numbered like "1. ..."). Up to 500 sentences.</div>
+          <input id="chapterTitle" placeholder="Chapter title (e.g. Cell: The Unit of Life)" />
+          <textarea id="chapterText" placeholder="Paste chapter sentences here..."></textarea>
+          <div class="row">
+            <button id="importBtn" class="primary">Import & Generate Questions</button>
+            <button id="sampleBtn">Load Sample</button>
+            <button id="exportChaptersBtn">Export All (JSON)</button>
+            <input id="importFile" type="file" accept="application/json" class="hidden"/>
+            <button id="importJsonBtn">Import JSON</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Your Chapters</h2>
+          <div id="chaptersList" class="list"></div>
+        </div>
+      </section>
+
+      <!-- Daily Test Tab -->
+      <section id="daily" class="tabview hidden">
+        <div class="panel">
+          <h2>Daily Test</h2>
+          <div class="muted">Auto-picks a short quiz from your chapters to keep streaks.</div>
+          <div class="row">
+            <label>Questions:</label>
+            <select id="dailyCount">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="50">50</option>
+            </select>
+            <button id="startDailyBtn" class="primary">Start Daily Test</button>
+          </div>
+          <div class="panel small muted" id="streakBox">Streak: 0</div>
+        </div>
+      </section>
+
+      <!-- Performance Tab -->
+      <section id="perf" class="tabview hidden">
+        <div class="panel">
+          <h2>Performance</h2>
+          <div id="historyList" class="list"></div>
+          <div class="row">
+            <button id="clearHistoryBtn">Clear History</button>
+            <button id="exportHistoryBtn">Export History</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quiz Modal -->
+      <div id="quizModal" class="modal hidden">
+        <div class="modal-card">
+          <div class="modal-header">
+            <div id="quizTitle">Quiz</div>
+            <div class="right small muted" id="progressLabel">0 / 0</div>
+          </div>
+          <div class="modal-body">
+            <div id="timerBox" class="small muted hidden">Time left: <span id="timerText">00:00</span></div>
+            <div id="questionCard" class="card">
+              <div id="qPrompt" class="qprompt"></div>
+              <input id="qAnswer" placeholder="Type missing word(s) here" />
+            </div>
+            <div id="navRow" class="row">
+              <button id="prevQ">Previous</button>
+              <button id="nextQ">Next</button>
+              <button id="finishQ" class="primary">Finish</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result Modal -->
+      <div id="resultModal" class="modal hidden">
+        <div class="modal-card">
+          <div class="modal-header">
+            <div>Result</div>
+            <div class="right small muted" id="resultScore">0 / 0</div>
+          </div>
+          <div class="modal-body" id="resultBody"></div>
+          <div class="modal-footer row">
+            <button id="retryBtn" class="primary">Retry</button>
+            <button id="closeResultBtn">Close</button>
+            <button id="exportWrongBtn">Export Wrong</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Drawer -->
+      <div id="settingsDrawer" class="drawer hidden">
+        <h3>Settings</h3>
+        <div class="row">
+          <label>Timer per quiz (sec)</label>
+          <select id="timerSelect">
+            <option value="0">Off</option>
+            <option value="300">5 min</option>
+            <option value="1200" selected>20 min</option>
+          </select>
+        </div>
+        <div class="row">
+          <label>Negative marking</label>
+          <select id="negSelect"><option value="true" selected>Enabled (-1)</option><option value="false">Disabled</option></select>
+        </div>
+        <div class="row">
+          <label>Amoled Dark</label>
+          <input id="amoledToggle" type="checkbox" />
+        </div>
+        <div class="row">
+          <label>Sound effects</label>
+          <input id="soundToggle" type="checkbox" />
+        </div>
+        <div class="row">
+          <button id="closeSettings">Close</button>
+        </div>
+      </div>
+
+    </main>
+
+    <footer class="footer">
+      <div class="muted">Offline PWA • NEET scoring (+4/-1) • 1 blank per sentence • Supports 500 sentences / chapter</div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./service-worker.js').catch(()=>{/* no-op */});
+    }
+  </script>
+</body>
+</html>
